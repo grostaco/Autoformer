@@ -1,7 +1,7 @@
 import torch.nn as nn
 from torch import Tensor
 
-from typing import Literal
+from typing import Literal, Iterable
 
 from .decomposition import SeriesDecomposition
 
@@ -40,3 +40,23 @@ class EncoderLayer(nn.Module):
         res, _ = self.decomp2(x + y)
 
         return res, weights
+
+
+class Encoder(nn.Module):
+    def __init__(self, attn_layers: Iterable[nn.Module], *,
+                 norm_layer: nn.Module | None = None):
+        super().__init__()
+
+        self.attn_layers = nn.ModuleList(attn_layers)
+        self.norm = norm_layer
+
+    def forward(self, x: Tensor):
+        weights = []
+        for attn_layer in self.attn_layers:
+            x, weight = attn_layer(x)
+            weights.append(weight)
+
+        if self.norm is not None:
+            x = self.norm(x)
+
+        return x, weights
