@@ -4,6 +4,8 @@ import torch.utils.data
 import pandas as pd
 import numpy as np
 
+from torch import Tensor
+
 from typing import Literal
 from sklearn.preprocessing import StandardScaler
 
@@ -127,5 +129,5 @@ class Dataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.data) - self.seq_len - self.pred_len + 1
 
-    def inverse_transform(self, data: np.ndarray | torch.Tensor):
+    def inverse_transform(self, data: np.ndarray | Tensor):
         return self.scaler.inverse_transform(data)
