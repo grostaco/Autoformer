@@ -11,6 +11,6 @@ class SeasonalLayerNorm(nn.Module):
 
     def forward(self, x: Tensor):
         x = self.ln(x)
-        bias = torch.mean(x, dim=1).repeat(1, x.shape[1], 1)
+        bias = torch.mean(x, dim=1).unsqueeze(1).repeat(1, x.shape[1], 1)
 
         return x - bias
