@@ -116,16 +116,24 @@ class AutoCorrelationLayer(nn.Module):
 
         self.attn_pool = attn_pool
 
-    def forward(self, queries: Tensor, keys: Tensor, values: Tensor):
+    def forward(self, queries: Tensor, keys: Tensor, values: Tensor, need_weights=True):
         N, L, E_q = queries.shape
-        N, S, E_k = keys.shape
+        _, S, E_k = keys.shape
         H = self.num_heads
 
         queries = self.query_proj(queries).view(N, L, H, -1)
         keys = self.key_proj(keys).view(N, S, H, -1)
         values = self.value_proj(values).view(N, S, H, -1)
 
-        out, attn = self.attn_pool(queries, keys, values)
+        if need_weights:
+            out, attn = self.attn_pool(
+                queries, keys, values, need_weights=need_weights)
+        else:
+            out = self.attn_pool(queries, keys, values,
+                                 need_weights=need_weights)
+
         out = out.view(N, L, -1)
 
-        return self.out_proj(out), attn
+        if need_weights:
+            return self.out_proj(out), attn  # type: ignore
+        return self.out_proj(out)
