@@ -109,10 +109,10 @@ class AutoCorrelationLayer(nn.Module):
 
         self.num_heads = num_heads
 
-        self.query_proj = nn.Linear(d_model, d_model * num_heads)
-        self.key_proj = nn.Linear(d_model, d_model * num_heads)
-        self.value_proj = nn.Linear(d_model, d_model * num_heads)
-        self.out_proj = nn.Linear(d_model, d_model * num_heads)
+        self.query_proj = nn.Linear(d_model, d_model)
+        self.key_proj = nn.Linear(d_model, d_model)
+        self.value_proj = nn.Linear(d_model, d_model)
+        self.out_proj = nn.Linear(d_model, d_model)
 
         self.attn_pool = attn_pool
 
