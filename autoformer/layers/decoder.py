@@ -34,11 +34,11 @@ class DecoderLayer(nn.Module):
         self.activation = nn.ReLU() if activation == 'relu' else nn.GELU()
 
     def forward(self, x: Tensor, cross: Tensor):
-        x = x + self.dropout(self.self_attn(x, x, x, needs_weight=False))
+        x = x + self.dropout(self.self_attn(x, x, x, need_weights=False))
         x, trend1 = self.decomp1(x)
 
         x = x + self.dropout(self.cross_attn(x, cross,
-                             cross, needs_weight=False))
+                             cross, need_weights=False))
         x, trend2 = self.decomp2(x)
 
         y = x
