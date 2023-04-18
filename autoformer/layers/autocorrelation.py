@@ -25,11 +25,13 @@ class AutoCorrelation(nn.Module):
         weights = mean[:, indices[:top_k]]
 
         tmp_corr = torch.softmax(weights, dim=-1)
+
         delays_agg = torch.zeros_like(values, dtype=torch.float)
 
         for i in range(top_k):
             pattern = torch.roll(values, -indices[i].item(), dims=-1)
-            delays_agg += pattern * tmp_corr[:, i].repeat(1, H, E_v, S)
+            delays_agg = delays_agg + pattern * tmp_corr[:, i].unsqueeze(1).unsqueeze(1).unsqueeze(
+                1).repeat(1, H, E_v, S)
         return self.dropout(delays_agg)
 
     def time_delay_agg_inference(self, values: Tensor, corr: Tensor):
@@ -71,12 +73,13 @@ class AutoCorrelation(nn.Module):
             `N` is the batch size, `H` is the number of heads, and `E_v` is the value embedding dimension.
         """
         _, L, _, _ = queries.shape
-        _, S, _, E_v = values.shape
+        _, S, _, _ = values.shape
 
         if L > S:
-            pad = (0, L - S, 0, 0)
+            pad = (0, 0, 0, 0, 0, L - S)
             keys = F.pad(keys, pad, 'constant', 0)
             values = F.pad(values, pad, 'constant', 0)
+
         else:
             values = values[:, :L, :, :]
             keys = keys[:, :L, :, :]
