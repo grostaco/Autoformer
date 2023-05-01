@@ -49,10 +49,12 @@ class AutoCorrelation(nn.Module):
         delays_agg = torch.zeros_like(values, dtype=torch.float)
 
         for i in range(top_k):
-            tmp_delay = init_indices + delay[:, i].repeat(1, H, E_v, S)
+            tmp_delay = init_indices + delay[:, i].unsqueeze(1).unsqueeze(1).unsqueeze(
+                1).repeat(1, H, E_v, S)
             pattern = torch.gather(tmp_values, -1, tmp_delay)
 
-            delays_agg += pattern * tmp_corr[:, i].repeat(1, H, E_v, S)
+            delays_agg += pattern * tmp_corr[:, i].unsqueeze(1).unsqueeze(1).unsqueeze(
+                1).repeat(1, H, E_v, S)
 
         return delays_agg
 
