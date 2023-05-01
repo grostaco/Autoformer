@@ -14,7 +14,7 @@ class MovingAverage(nn.Module):
         padding = (self.kernel_size - 1) // 2
 
         x = F.pad(x, (0, 0, padding, padding), mode='replicate')
-        x = self.avg(x)
+        x = self.avg(x.permute(0, 2, 1))
         x = x.permute(0, 2, 1)
 
         return x
